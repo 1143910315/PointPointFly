@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+
+	<body>
+		<canvas id="canv" width="600px" height="600px"></canvas>
+	</body>
+
+</html>
+<script type="text/javascript">
+	var pointArray = new Array();
+	var context = canv.getContext('2d');
+	context.fillStyle = "blue";
+	var interfacePoint = function(x, y) {
+		this.x = x ? x : 0;
+		this.y = y ? y : 0;
+		this.speedX = Math.random();
+		this.speedY = Math.random();
+		var t = this;
+		setInterval(function() {
+			t.effect();
+		}, 80);
+		pointArray[pointArray.length] = this;
+	};
+	interfacePoint.prototype.getPoint = function() {
+		return {
+			x: this.x,
+			y: this.y
+		};
+	};
+	interfacePoint.prototype.effect = function() {
+		for(var j in pointArray) {
+			var i = pointArray[j];
+			if(i != this) {
+				var point = i.getPoint();
+				if(Math.sqrt((point.x - this.x) * (point.x - this.x) + (point.y - this.y) * (point.y - this.y)) < 100) {
+					var temp;
+					var temp2;
+					temp = (100 - Math.abs(point.x - this.x)) * 0.1;
+					temp2 = (100 - Math.abs(point.x - this.x)) * 0.08 + 1;
+					if(point.x - this.x > 0) {
+						this.speedX -= temp;
+						this.speedX += temp2;
+					} else {
+						this.speedX += temp;
+						this.speedX -= temp2;
+					}
+					temp = (100 - Math.abs(point.y - this.y)) * 0.1;
+					temp2 = (100 - Math.abs(point.y - this.y)) * 0.08 + 1;
+					if(point.y - this.y > 0) {
+						this.speedY -= temp;
+						this.speedY += temp2;
+					} else {
+						this.speedY += temp;
+						this.speedY -= temp2;
+					}
+				}
+			}
+		}
+		this.x += this.speedX*0.2;
+		this.y += this.speedY*0.2;
+		/*if (this.speedX>0.5||this.speedY>0.5) {
+		this.speedX*=0.95;
+		this.speedY*=0.95;			
+		}*/
+		if(this.x > 600) {
+			this.speedX = Math.abs(this.speedX) * -1;
+		}
+		if(this.y > 600) {
+			this.speedY = Math.abs(this.speedY) * -1;
+		}
+		if(this.x < 0) {
+			this.speedX = Math.abs(this.speedX);
+		}
+		if(this.y < 0) {
+			this.speedY = Math.abs(this.speedY);
+		}
+	};
+	var raf = function raf() {
+		context.clearRect(0, 0, 10000, 10000);
+		for(var j in pointArray) {
+			var i = pointArray[j];
+			context.fillRect(i.x - 1, i.y - 1, 2, 2);
+		}
+		requestAnimationFrame(raf)
+	};
+	requestAnimationFrame(raf);
+</script>
